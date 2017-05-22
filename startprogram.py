@@ -12,10 +12,10 @@ def array_set():
             print(predictions)
 
 def main():
-    numberofsteps=50
-    for x in range(0,1):
+    numberofsteps=5000
+    for x in range(0,30):
         neural_train.train(numberofsteps)
-        neural_validate.validate(numberofsteps/10)
+        neural_validate.validate()
         neural_predict.predict()
         #array_set()
 

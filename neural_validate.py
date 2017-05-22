@@ -8,12 +8,12 @@ import neural_template as nt
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-def validate(numberof):
-    nt.evaluate(numberof)
+def validate():
+    nt.evaluate()
 
 
-def validatemain(numberofsteps):  # pylint: disable=unused-argument
-    validate(numberofsteps)
+def validatemain():  # pylint: disable=unused-argument
+    validate()
 
 
 if __name__ == '__validatemain__':
