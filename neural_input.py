@@ -5,7 +5,7 @@ from __future__ import print_function
 import pandas as pd
 import tensorflow as tf
 
-DATAINPUT = 'GASPRESURE'
+DATAINPUT = 'QUAKE'
 estimatortype = 'REGRESSOR'
 learningrate = 0.1
 regularizationstrength = 0.001
@@ -52,13 +52,13 @@ if (DATAINPUT == 'QUAKE'):
     LABEL = ["quakes"]
 
     modellocation = "/tmp/quake_model"
-    estimatortype = 'CLASSIFIER'
+    estimatortype = 'REGRESSOR'
 
     # Defines the training set, test set and the prediction set to use for the model
     training_set = pd.read_csv("data/quake/quake_train.csv", skipinitialspace=True,
-                               skiprows=1, names=COLUMNS)
+                               skiprows=1, names=COLUMNS, usecols=[0,1,2])
     test_set = pd.read_csv("data/quake/quake_test.csv", skipinitialspace=True,
-                           skiprows=1, names=COLUMNS)
+                           skiprows=1, names=COLUMNS, usecols=[0,1,2])
     prediction_set = pd.read_csv("data/quake/quake_predict.csv", skipinitialspace=True,
                                  skiprows=1, names=COLUMNS)
 
