@@ -5,11 +5,12 @@ from __future__ import print_function
 import pandas as pd
 import tensorflow as tf
 
+HIDDEN=20
 DATAINPUT = 'QUAKE'
-estimatortype = 'REGRESSOR'
+ESTIMATORTYPE = None
 learningrate = 0.1
 regularizationstrength = 0.001
-numberofgroups = 2              # Defines how many classes are used for the CLASSIFICATION model
+numberofgroups = 20             # Defines how many classes are used for the CLASSIFICATION model
 hiddenunits = None              # Defines the neural network structure
 modellocation = None            # Defines the place the place where the model will be stored
 metrics = None                  # Defines the metrics that are being used to monitor the process,
@@ -24,7 +25,7 @@ if (DATAINPUT == 'TEST'):  # Testdataset using the boston dataset
     COLUMNS = ["crim", "zn", "indus", "nox", "rm", "age", "dis", "tax", "ptratio", "medv"]
     FEATURES = ["crim", "zn", "indus", "nox", "rm", "age", "dis", "tax", "ptratio"]
     LABEL = ["medv"]
-    estimatortype = 'REGRESSOR'
+    ESTIMATORTYPE = 'REGRESSOR'
     modellocation = "/tmp/boston_model"
 
     # Defines the training set, test set and the prediction set to use for the model
@@ -34,7 +35,7 @@ if (DATAINPUT == 'TEST'):  # Testdataset using the boston dataset
                            skiprows=1, names=COLUMNS)
     prediction_set = pd.read_csv("data/boston/boston_predict.csv", skipinitialspace=True,
                                  skiprows=1, names=COLUMNS)
-    if estimatortype == 'REGRESSOR':
+    if ESTIMATORTYPE == 'REGRESSOR':
         learningrate = 0.1
         regularizationstrength = 0.001
         hiddenunits = [10, 10, 8]
@@ -52,7 +53,7 @@ if (DATAINPUT == 'QUAKE'):
     LABEL = ["quakes"]
 
     modellocation = "/tmp/quake_model"
-    estimatortype = 'REGRESSOR'
+    ESTIMATORTYPE = 'REGRESSOR'
 
     # Defines the training set, test set and the prediction set to use for the model
     training_set = pd.read_csv("data/quake/quake_train.csv", skipinitialspace=True,
@@ -62,8 +63,8 @@ if (DATAINPUT == 'QUAKE'):
     prediction_set = pd.read_csv("data/quake/quake_predict.csv", skipinitialspace=True,
                                  skiprows=1, names=COLUMNS)
 
-    if estimatortype == 'REGRESSOR':
-        hiddenunits = [10, 3, 10]
+    if ESTIMATORTYPE == 'REGRESSOR':
+        hiddenunits = [10, HIDDEN, 10]
         learningrate = 0.1
         regularizationstrength = 0.001
 
@@ -74,7 +75,7 @@ if (DATAINPUT == 'QUAKE'):
                     prediction_key=tf.contrib.learn.PredictionKey.SCORES
                 )
         }
-    if estimatortype == 'CLASSIFIER':
+    if ESTIMATORTYPE == 'CLASSIFIER':
         hiddenunits = [10, 3, 10]
         learningrate = 0.1
         numberofgroups = 25
@@ -87,12 +88,12 @@ if (DATAINPUT == 'QUAKE'):
                 )
         }
 
-if DATAINPUT == 'GASPRESURE':
+elif DATAINPUT == 'GASPRESURE':
     COLUMNS = ["time", "gaspre"]
     FEATURES = ["time"]
     LABEL = ["gaspre"]
 
-    estimatortype = 'REGRESSOR'
+    ESTIMATORTYPE = 'REGRESSOR'
     learningrate = 0.1
     regularizationstrength = 0.001
     hiddenunits = [10, 1, 10]
@@ -105,7 +106,7 @@ if DATAINPUT == 'GASPRESURE':
     prediction_set = pd.read_csv("data/gaspresurev2/PressureDatav2_predict.csv", skipinitialspace=True,
                                  skiprows=1, names=COLUMNS)
 
-    if estimatortype == 'REGRESSOR':
+    if ESTIMATORTYPE == 'REGRESSOR':
         hiddenunits = [10, 10, 10]
         learningrate = 0.3
         regularizationstrength = 0.001
@@ -118,13 +119,13 @@ if DATAINPUT == 'GASPRESURE':
                 )
         }
 
-if DATAINPUT == 'GASQUAKE':
+elif DATAINPUT == 'GASQUAKE':
     COLUMNS = ["gaspro", "gaspre", "quakes", "quakes15"]
     FEATURES = ["gaspro", "gaspre"]
     LABEL = ["quakes", "quakes15"]
 
     modellocation = "/tmp/gastestmodel"
-    estimatortype = 'REGRESSOR'
+    ESTIMATORTYPE = 'REGRESSOR'
 
     training_set = pd.read_csv("data/gastest/gastest_train.csv", skipinitialspace=True,
                                skiprows=1, names=COLUMNS)
@@ -133,7 +134,7 @@ if DATAINPUT == 'GASQUAKE':
     prediction_set = pd.read_csv("data/gastest/gastest_predict.csv", skipinitialspace=True,
                                  skiprows=1, names=COLUMNS)
 
-    if estimatortype == 'REGRESSOR':
+    if ESTIMATORTYPE == 'REGRESSOR':
         learningrate = 0.1
         regularizationstrength = 0.001
         hiddenunits = [10, 10, 8]
@@ -145,7 +146,7 @@ if DATAINPUT == 'GASQUAKE':
                 )
         }
 
-    if estimatortype == 'CLASSIFIER':
+    if ESTIMATORTYPE == 'CLASSIFIER':
         learningrate = 0.1
         hiddenunits = [10, 10, 8]
         numberofgroups = 20  # Classifier not yet working with multiple labels as regressor
@@ -157,6 +158,9 @@ if DATAINPUT == 'GASQUAKE':
                 )
         }
 
+else:
+    print("Datainput= ",DATAINPUT)
+    print("No valid data input chosen")
 
 # Function that defines the input that the model is using.
 # It takes the features and labels from the used datainput and returns those
@@ -173,7 +177,7 @@ def input_fn(data_set):
 def estimatorinput():
     feature_cols = [tf.contrib.layers.real_valued_column(k) for k in FEATURES]
     estimator = None
-    if estimatortype == 'REGRESSOR':
+    if ESTIMATORTYPE == 'REGRESSOR':
         estimator = tf.contrib.learn.DNNRegressor(feature_columns=feature_cols,
                                                   hidden_units=hiddenunits,
                                                   activation_fn=tf.nn.relu,
@@ -181,11 +185,11 @@ def estimatorinput():
                                                       learning_rate=learningrate,
                                                       l1_regularization_strength=regularizationstrength
                                                   ),
-                                                  model_dir=modellocation + "/regression",
+                                                  model_dir=modellocation + "/regression"+str(HIDDEN),
                                                   label_dimension=LABEL.__len__()
                                                   )
 
-    if estimatortype == 'CLASSIFIER':
+    if ESTIMATORTYPE == 'CLASSIFIER':
         estimator = tf.contrib.learn.DNNClassifier(feature_columns=feature_cols,
                                                    hidden_units=hiddenunits,
                                                    n_classes=numberofgroups,

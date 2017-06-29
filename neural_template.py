@@ -18,37 +18,29 @@ def fit(numberofsteps):
 # information is shown in the test.
 def evaluate():
     estimator = ni.estimatorinput()
-    if ni.estimatortype == 'REGRESSOR':
-        ev = estimator.evaluate(input_fn=lambda: ni.input_fn(ni.test_set), steps=1, metrics=ni.metrics)
+    ev = estimator.evaluate(input_fn=lambda: ni.input_fn(ni.test_set), steps=1, metrics=ni.metrics)
+    #print(ni.metrics)
+    loss_score = ev["loss"]
+    print("Loss: {0:f}".format(loss_score))
+    print(ev)
 
-        print(ni.metrics)
-        loss_score = ev["loss"]
-        print("Loss: {0:f}".format(loss_score))
-        print(ev)
 
-    if ni.estimatortype == 'CLASSIFIER':
-        ev = estimator.evaluate(input_fn=lambda: ni.input_fn(ni.test_set), steps=1, metrics=ni.metrics)
-
-        print(ni.metrics)
-        loss_score = ev["loss"]
-        print("Loss: {0:f}".format(loss_score))
-        print(ev)
 
 
 # Function that is used to do predictions with the model. It takes the prediction set as input and uses the
 # predict function from the chosen estimator.
 def predictfromcsv():
     estimator = ni.estimatorinput()
-    if ni.estimatortype == 'REGRESSOR':
+    if ni.ESTIMATORTYPE == 'REGRESSOR':
         y = estimator.predict_scores(input_fn=lambda: ni.input_fn(ni.prediction_set))
         predictions = list(y)
-        print(predictions)
+        #print(predictions)
         for x in predictions:
             print("Predictions: {}".format(str(x)))
 
-    if ni.estimatortype == 'CLASSIFIER':
+    if ni.ESTIMATORTYPE == 'CLASSIFIER':
         y = estimator.predict_classes(input_fn=lambda: ni.input_fn(ni.prediction_set))
         predictions = list(y)
-        print(predictions)
+        #print(predictions)
         for x in predictions:
             print("Predictions: {}".format(str(x)))
